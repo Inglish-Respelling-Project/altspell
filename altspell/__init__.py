@@ -24,6 +24,7 @@ from importlib.metadata import version
 from flask import Flask
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import inspect
 from altspell_plugins import PluginBase
 from .model import Base
 
@@ -90,7 +91,8 @@ def create_app(test_config=None):
 
     # create the database
     with app.app_context():
-        db.create_all()
+        if not inspect(db.engine).get_table_names():
+            db.create_all()
 
     app.plugin_instances = {}
 
